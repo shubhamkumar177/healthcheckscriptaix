@@ -1,0 +1,51 @@
+#!/usr/bin/ksh
+###############################################################################
+# Developed BY : Kumar Shubham
+# Application Owner: AIXAdmin                                                 #
+# Created:10/19/2022
+# Language: shell                                                             #
+#-----------------------------------------------------------------------------#
+# Purpose: Auto sync NTP on all server
+#-----------------------------------------------------------------------------#
+#  log file path : /usr/local/bin/ntpscript.log
+#-----------------------------------------------------------------------------#
+# Last Modified
+# Name          date
+# kshubham      17/11/2022
+# kshubham      19/01/2022                                                    #
+# To disable mail service comment line 38 to 44
+#                                                             #
+###############################################################################
+
+a=`/usr/sbin/ntpdate -d time.westrock.com |grep -iw offset |sed -n '2p' |awk -F " " '{print$NF}'`
+if [ $a -ge 10 ]
+then
+d=`uname -n`
+echo "$d"
+e=`date`
+echo "$e"
+f="NTP offset was: $a"
+echo "$f"
+x=`stopsrc -s xntpd`
+echo "$x"
+y=`/usr/sbin/ntpdate time.westrock.com`
+echo "$y"
+z=`startsrc -s xntpd -a "-x"`
+echo "$z"
+g="NTP offset has been synced to: `/usr/sbin/ntpdate -d time.westrock.com |grep -iw offset |sed -n '2p' |awk -F ' ' '{print$NF}'`"
+echo "$g"
+
+{
+        echo From: root.`hostname`@westrock.com
+        echo To: Operations-pSeriesServerOperations@westrock.com
+        echo Subject: NTP SYNC STATUS FOR SERV@`hostname`
+        echo
+        echo  "**This is automated Triggered Mail** \n \n \n \n $d\n $e\n $f\n $x\n $y\n $z\n $g\n \n \n If any error kindly check the logs in the given serv
+er log path= /usr/local/bin/ntpscript.log"
+}| /usr/lib/sendmail -t
+echo "---------------------------------------------------------------------------------------------------------------------------------------"
+else
+echo "ntp offset is $a"
+echo "`date`"
+echo "---------------------------------------------------------------------------------------------------------------------------------------"
+fi >> /usr/local/bin/ntpscript.log
