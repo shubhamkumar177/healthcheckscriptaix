@@ -1,34 +1,68 @@
+#!/usr/bin/ksh
 a=`lsps -s |sed -n "2p" |awk -F " " '{print $NF}' |sed s/%//g`
 if [ $a -ge 75 ]
 then
+sleep 1
+echo "paging space check done , report not ok"
 ps="paging space for server `hostname` is $a"
-echo "$ps"
-fi >> tmp
+echo "$ps" >> tmp
+else
+sleep 1
+echo "paging space check done , report ok"
+fi
+
 echo "`df -gt |sed "1d" |head -8`" | while read line
 do
 ln=`echo $line | awk -F " " '{print$(NF-1)}'|sed s/%//g`
 if [ $ln -ge 80 ]
 then
-echo "$line `hostname`"
-fi >> tmp
+sleep 1
+echo "root filesystem check done , report not ok"
+echo "$line `hostname`" >> tmp
+else
+sleep 1
+echo "root filesystem check done , report ok"
+fi
 done
+
 path=`lspath |grep -v Ena`
 if [ -z "$path" ]
 then
+sleep 1
+echo "path check done , report ok"
 else
-echo"$path"
-fi >> tmp
+sleep 1
+echo "path check done, report not ok"
+echo"$path" >> tmp
+fi 
+
 echo "`lsdev -Cc disk`" |while read line
 do
 stat=`echo $line |awk -F " " '{print $2}'`
 if [ $stat != "Available" ]
 then
+sleep 1
+echo "disk check done , report not ok"
 echo "$line" >> tmp
+else
+sleep 1
+echo "disk check done, report ok"
 fi
 done
+
 null=`cat tmp`
 if [ -z "$null" ]
 then
+sleep 1
+echo "All Report ok"
 else
-echo "$null"
+echo "Mail triggered"
+{
+        echo From: root.`hostname`@westrock.com
+        echo To: kumar.shubham@westrock.com
+        echo Subject: Healthcheck Status for server@`hostname`
+        echo
+        echo  "**This is automated Triggered Mail** \n \n \n \n $null"
+}| /usr/lib/sendmail -t
+rm -rf tmp
 fi
