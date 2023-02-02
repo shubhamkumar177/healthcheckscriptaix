@@ -51,6 +51,18 @@ echo "disk check done, report ok"
 fi
 done
 
+usr=`lsuser -a unsuccessful_login_count sndiscovlx | awk -F "=" '{print $NF}'`
+if [ $usr -gt 0 ]
+then
+un=`chuser unsuccessful_login_count=0 sndiscovlx`
+sleep 1
+echo "unsuccessfull login count for sndiscovlx has been cleared to 0"
+echo "unsuccessful_login_count for user sndiscovlx has been cleared to $un" >> tmp
+else
+sleep 1
+echo "unsuccessfull login count for sndiscovlx is 0, report ok"
+fi
+
 null=`cat tmp`
 if [ -z "$null" ]
 then
