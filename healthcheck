@@ -9,7 +9,7 @@ ps="paging space is $a%"
 echo "$ps" >> tmp
 else
 sleep 1
-echo "paging space check done , report ok"
+echo "paging space is $a% , report ok"
 fi
 
 echo "`df -gt |sed "1d" |head -8`" | while read line
@@ -18,11 +18,11 @@ ln=`echo $line | awk -F " " '{print$(NF-1)}'|sed s/%//g`
 if [ $ln -ge 90 ]
 then
 sleep 1
-echo "root filesystem check done , report not ok"
+echo "`echo $line |awk -F ' ' '{print $NF}'` $ln% , report not ok"
 echo "$line `hostname`" >> tmp
 else
 sleep 1
-echo "root filesystem check done , report ok"
+echo "`echo $line |awk -F ' ' '{print $NF}'` $ln%, report ok"
 fi
 done
 
@@ -33,7 +33,7 @@ sleep 1
 echo "path check done , report ok"
 else
 sleep 1
-echo "path check done, report not ok"
+echo "Path check done, report not ok"
 echo"$path" >> tmp
 fi 
 
@@ -43,21 +43,20 @@ stat=`echo $line |awk -F " " '{print $2}'`
 if [ $stat != "Available" ]
 then
 sleep 1
-echo "disk check done , report not ok"
+echo "$line , report not ok"
 echo "$line" >> tmp
 else
 sleep 1
-echo "disk check done, report ok"
+echo "$line, report ok"
 fi
 done
 
 usr=`lsuser -a unsuccessful_login_count sndiscovlx | awk -F "=" '{print $NF}'`
 if [ $usr -gt 0 ]
 then
-chuser unsuccessful_login_count=0 sndiscovlx
 sleep 1
-echo "unsuccessfull login count for sndiscovlx has been cleared to 0"
-echo "unsuccessful_login_count for user sndiscovlx has been cleared to 0" >> tmp
+echo "unsuccessfull login count for sndiscovlx user is $usr"
+echo "unsuccessful_login_count for user sndiscovlx is $usr" >> tmp
 else
 sleep 1
 echo "unsuccessfull login count for sndiscovlx is 0, report ok"
