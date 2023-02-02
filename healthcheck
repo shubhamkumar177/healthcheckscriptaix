@@ -68,6 +68,7 @@ if [ -z "$null" ]
 then
 sleep 1
 echo "All Report ok"
+rm -rf tmp
 else
 echo "Mail triggered"
 {
