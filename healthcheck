@@ -54,10 +54,10 @@ done
 usr=`lsuser -a unsuccessful_login_count sndiscovlx | awk -F "=" '{print $NF}'`
 if [ $usr -gt 0 ]
 then
-un=`chuser unsuccessful_login_count=0 sndiscovlx`
+chuser unsuccessful_login_count=0 sndiscovlx
 sleep 1
 echo "unsuccessfull login count for sndiscovlx has been cleared to 0"
-echo "unsuccessful_login_count for user sndiscovlx has been cleared to $un" >> tmp
+echo "unsuccessful_login_count for user sndiscovlx has been cleared to 0" >> tmp
 else
 sleep 1
 echo "unsuccessfull login count for sndiscovlx is 0, report ok"
