@@ -1,10 +1,11 @@
 #!/usr/bin/ksh
+touch tmp
 a=`lsps -s |sed -n "2p" |awk -F " " '{print $NF}' |sed s/%//g`
 if [ $a -ge 75 ]
 then
 sleep 1
 echo "paging space check done , report not ok"
-ps="paging space for server `hostname` is $a"
+ps="paging space is $a%"
 echo "$ps" >> tmp
 else
 sleep 1
@@ -14,7 +15,7 @@ fi
 echo "`df -gt |sed "1d" |head -8`" | while read line
 do
 ln=`echo $line | awk -F " " '{print$(NF-1)}'|sed s/%//g`
-if [ $ln -ge 80 ]
+if [ $ln -ge 90 ]
 then
 sleep 1
 echo "root filesystem check done , report not ok"
