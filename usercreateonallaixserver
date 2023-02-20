@@ -1,0 +1,8 @@
+#!/usr/bin/ksh
+cmd='id=384132 pgrp=staff groups=staff,DBA,system gecos="Debashish Roy" SYSTEM=KRB5files registry=KRB5files'
+userid="droy5"
+for i in `cat list`
+do
+echo "`ssh $i hostname`"
+ssh $i sudo mkuser $cmd $userid
+done
